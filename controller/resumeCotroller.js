@@ -1,5 +1,5 @@
 const fs = require("fs");
-const pdfParse = require("pdf-parse");
+const pdf = require("pdf-parse");
 const Resume = require("../models/resume");
 const OpenAI = require("openai");
 
@@ -10,7 +10,8 @@ const openai = new OpenAI({
 exports.uploadResume = async (req, res) => {
   try {
     const fileBuffer = fs.readFileSync(req.file.path);
-    const pdfData = await pdfParse(fileBuffer);
+
+    const pdfData = await pdf(fileBuffer);
 
     const aiResponse = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
@@ -34,6 +35,7 @@ exports.uploadResume = async (req, res) => {
       resume,
     });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 };
